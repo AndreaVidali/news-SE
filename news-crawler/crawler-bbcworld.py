@@ -51,8 +51,8 @@ with open('news-bbcworld.txt', 'a', encoding="utf8") as outfile:
                 # extract URL from tweet
                 tweet_url = re.search("(?P<url>https?://[^\s]+)", tweet_cleaned).group("url")
 
-                # open URL and save the HTML
                 try:
+                    # open URL and save the HTML
                     page = urllib.request.urlopen(tweet_url)
                     soup = BeautifulSoup(page, 'lxml')
 
@@ -77,9 +77,6 @@ with open('news-bbcworld.txt', 'a', encoding="utf8") as outfile:
                     # delete newlines and multiple spaces
                     story_text = return_regexp.sub(' ', story_text)
                     story_text = space_regexp.sub(' ', story_text)
-
-                    # write results on file
-                    # with open('tweets.txt', 'w', encoding="utf8") as outfile:
 
                     # if the text is not empty
                     if story_text:
