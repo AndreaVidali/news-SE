@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 # url = "https://www.nytimes.com/interactive/2017/12/14/climate/republicans-global-warming-maps.html?hp&action=click&pgtype=Homepage&clickSource=story-heading&module=second-column-region&region=top-news&WT.nav=top-news"
 # url = "https://t.co/dM34E1OHKU"
 # url = "https://t.co/EqfoMZVZhb"
-url = "https://t.co/6WKilAdtVz"
+url = "https://t.co/a7czeZpzxZ"
 
 page = urllib.request.urlopen(url)
 
@@ -23,15 +23,24 @@ all_par = soup.find_all('p')
 story_par = soup.find_all('p')
 
 text_end = bool(0)
-
+'''
 for idx, par in enumerate(story_par):
     if idx > 11 and not text_end:
         if par.attrs != {'class': ['top-stories-promo-story__summary', '']}:
             print(par.text)
         else:
             text_end = bool(1)
+'''
+
+text_begin = False
+text_end = False
 
 
+for par in story_par:
+    if par.attrs == {'class': ['story-body__introduction']}:
+        text_begin = True
+    if par.attrs == {'class': ['top-stories-promo-story__summary', '']}:
+        text_end = True
+    if text_begin and not text_end:
+        print(par.text)
 
-# prendere prima riga di ogni file txt del testo della notizia così si evita il par sotto per l'help
-# aggiungere campi nel file della news e magari mettere link + teto + caption twitter nella stessa riga
