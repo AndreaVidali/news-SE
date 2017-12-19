@@ -24,7 +24,7 @@ space_regexp = re.compile(r'\s+')
 # write results on file
 with open('tweets.txt', 'w', encoding="utf8") as outfile:
     # tweets request
-    bbc_tweets = api.user_timeline(screen_name='BBCWorld', count=300)
+    bbc_tweets = api.user_timeline(screen_name ='BBCWorld', count=300)
 
     for tweet in bbc_tweets:
 
