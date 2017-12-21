@@ -25,3 +25,12 @@ news-crawler/.idea/misc.xml
 news-crawler/.idea/modules.xml
 news-crawler/.idea/news-crawler.iml
 news-crawler/.idea/workspace.xml
+engine/.idea/dictionaries/kivid.xml
+engine/.idea/libraries/lucene_analyzers_common_7_1_0.xml
+engine/.idea/libraries/lucene_core_7_1_0.xml
+engine/.idea/libraries/lucene_demo_7_1_0.xml
+engine/.idea/libraries/lucene_queryparser_7_1_0.xml
+engine/.idea/misc.xml
+engine/.idea/modules.xml
+engine/.idea/workspace.xml
+engine/engine.iml
