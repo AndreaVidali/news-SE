@@ -40,7 +40,7 @@ with open('news-bbcworld.txt', 'a', encoding="utf8") as outfile:
             # check if the tweet it has been downloaded yet
             tweet_present = False
 
-            with open("tweets.txt", encoding="utf8") as tweets_file:
+            with open("news-bbcworld.txt", encoding="utf8") as tweets_file:
                 for line in csv.reader(tweets_file, dialect="excel-tab"):
                     if str(tweet.id) == line[0]:
                         tweet_present = True
@@ -62,7 +62,7 @@ with open('news-bbcworld.txt', 'a', encoding="utf8") as outfile:
                     # here we store the text of the news
                     story_text = ''
 
-                    # flag that catch the begnin and the end of the news
+                    # flag that catch the begin and the end of the news
                     text_begin = False
                     text_end = False
 
