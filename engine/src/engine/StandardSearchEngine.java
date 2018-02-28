@@ -17,10 +17,7 @@ import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.*;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.search.similarities.TFIDFSimilarity;
@@ -28,6 +25,8 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.codecs.*;
 import org.apache.lucene.util.BytesRef;
+
+import static org.apache.lucene.index.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS;
 
 public class StandardSearchEngine {
 
@@ -45,9 +44,6 @@ public class StandardSearchEngine {
         config.setSimilarity(similarity);
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
         IndexWriter w = new IndexWriter(index, config);
-
-        // create the collection of terms
-        Map<String, Integer> termCollection = new HashMap<String, Integer>();
 
         // read the news file
         BufferedReader buf = new BufferedReader(new FileReader("documents/news-bbcworld.txt"));
@@ -68,7 +64,7 @@ public class StandardSearchEngine {
         w.close();
 
         // query
-        String querystr = args.length > 0 ? args[0] : "asteroid";
+        String querystr = args.length > 0 ? args[0] : "football";
 
         // the "newsText" arg specifies the default field to use when no field is explicitly specified in the query.
         Query q = new QueryParser("newsText", analyzer).parse(querystr);
@@ -78,33 +74,86 @@ public class StandardSearchEngine {
         IndexReader reader = DirectoryReader.open(index);
         IndexSearcher searcher = new IndexSearcher(reader);
         searcher.setSimilarity(similarity);
+        TFIDFSimilarity tfidfSIM = new ClassicSimilarity();
         TopDocs docs = searcher.search(q, hitsPerPage);
         ScoreDoc[] hits = docs.scoreDocs;
+        System.out.println("Found " + hits.length + " hits || Query: " + querystr);
 
+        // user-document retrieval
+        String queryTopic = "italy";
+        Query qUser = new QueryParser("newsText", analyzer).parse(queryTopic);
+        int nResults = 1;
+        TopDocs docUser = searcher.search(qUser, nResults);
+        ScoreDoc[] hitsUser = docUser.scoreDocs;
+        int docUserId = hitsUser[0].doc;
+        Terms docUserVector = reader.getTermVector(docUserId, "newsText");
 
-        // display results
-        System.out.println("Found " + hits.length + " hits.");
+        Document dasd = searcher.doc(hitsUser[0].doc);
+
+        List<String> termsUserDoc = new ArrayList<>();
+        TermsEnum itrUs = docUserVector.iterator();
+        BytesRef termUs;
+        while ((termUs = itrUs.next()) != null) {
+            String termTextUs = termUs.utf8ToString();
+            termsUserDoc.add(termTextUs);
+        }
+
+        // vector containing score for personalization
+        Map<Integer, Float> personalScoreContainer = new HashMap<>();
+        Map<Integer, Double> combinedScoreContainer = new HashMap<>();
+        double alpha = 0.3;
+
+        // explore results
         for (int i=0; i<hits.length; ++i) {
+
+            // data structure to manage results document
+            HashMap<String,Integer> docWeights = new HashMap<>();
+
             int docId = hits[i].doc;
             Document d = searcher.doc(docId);
 
-            // lista testo doc
-            if(i == 0) {
-                List<String> docText = getTokenizedText(d, "newsText");
-                System.out.println(docText);
+            /*List<String> docText = getTokenizedText(d, "newsText");
+            System.out.println("Document text:"+docText);
 
-                //for(term : docText)
+            Collections.sort(docText);
+            System.out.println("Document text sorted:"+docText);*/
 
-                Collections.sort(docText);
-                System.out.println(docText);
+            Terms docVector = reader.getTermVector(docId, "newsText");
+            TermsEnum itr = docVector.iterator();
+            BytesRef term;
 
-                Terms docVector = reader.getTermVector(docId, "newsText");
-                System.out.println(docVector);
+            float scorePersonal = 0;
 
+            while ((term = itr.next()) != null) {
+
+                String termText = term.utf8ToString();
+                long termFreq = itr.totalTermFreq();
+
+                Query q1 = new QueryParser("newsText", analyzer).parse(termText);
+                TotalHitCountCollector collector = new TotalHitCountCollector();
+                searcher.search(q1, collector);
+                int docFreq = collector.getTotalHits();
+
+                // System.out.println("term: "+termText+" -- term frequency = "+termFreq+", document frequency = "+docFreq);
+
+                if(termsUserDoc.contains(termText)) {
+                    float tf = tfidfSIM.tf(termFreq);
+                    float idf = tfidfSIM.idf(docFreq, reader.numDocs());
+                    scorePersonal = scorePersonal + (tf * idf);
+                }
             }
 
-            System.out.println((i + 1) + ". " + "Score: " + hits[i].score + " || " + d.get("createdAt") + "\t" + d.get("newsLink") + "\t" + d.get("tweet"));
+            personalScoreContainer.put(docId, scorePersonal);
+
+            // combine results
+            double combinedScore = alpha * scorePersonal + (1 - alpha) * hits[i].score;
+            combinedScoreContainer.put(docId, combinedScore);
+
+            System.out.println((i + 1) + ". " + "Score: " + hits[i].score + " || Pers.score: " + scorePersonal + " || Comb.score: " + combinedScore + " || " + d.get("createdAt") + "\t" + d.get("newsLink") + "\t" + d.get("tweet"));
+
         }
+
+        printSortedResults(combinedScoreContainer, hits, searcher);
 
         // reader can only be closed when there is no need to access the documents any more.
         reader.close();
@@ -121,13 +170,17 @@ public class StandardSearchEngine {
         vectorsType.setStoreTermVectors(true);
         vectorsType.setStoreTermVectorPositions(true);
         vectorsType.setStoreTermVectorOffsets(true);
+        vectorsType.setStoreTermVectorPayloads(true);
+        vectorsType.setStored(true);
+        vectorsType.setIndexOptions(DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS);
+        vectorsType.setTokenized(true);
 
         doc.add(new Field("newsText", newsText, vectorsType));
         w.addDocument(doc);
     }
 
     private static List<String> getTokenizedText(Document document, String field) throws IOException {
-        TokenStream stream = new EnglishAnalyzer().tokenStream(field, new StringReader(document.getField(field).stringValue()));
+        TokenStream stream = new StandardAnalyzer().tokenStream(field, new StringReader(document.getField(field).stringValue()));
         List<String> result = new ArrayList<>();
         try {
             stream.reset();
@@ -138,6 +191,59 @@ public class StandardSearchEngine {
             // not thrown b/c we're using a string reader...
         }
         return result;
+    }
+
+    private static float getScoreByDocID(ScoreDoc[] hits, int docID) {
+        for (ScoreDoc hit : hits) {
+            if (hit.doc == docID)
+                return hit.score;
+        }
+        return 0;
+    }
+
+    private static void printSortedResults(Map<Integer, Double> combinedResults, ScoreDoc[] hits, IndexSearcher searcher) {
+
+        Set<Integer> keySet = combinedResults.keySet();
+        Iterator iterator = keySet.iterator();
+
+        ArrayList<Integer> keyList = new ArrayList<>();
+
+        while (iterator.hasNext()){
+            //Integer key = iterator.next();
+            //keyList.add(key);
+        }
+
+        Collections.sort(keyList);
+
+    }
+
+    public LinkedHashMap<Integer, Double> sortHashMapByValues(HashMap<Integer, Double> passedMap) {
+        List<Integer> mapKeys = new ArrayList<>(passedMap.keySet());
+        List<String> mapValues = new ArrayList<>(passedMap.values());
+        Collections.sort(mapValues);
+        Collections.sort(mapKeys);
+
+        LinkedHashMap<Integer, String> sortedMap =
+                new LinkedHashMap<>();
+
+        Iterator<String> valueIt = mapValues.iterator();
+        while (valueIt.hasNext()) {
+            String val = valueIt.next();
+            Iterator<Integer> keyIt = mapKeys.iterator();
+
+            while (keyIt.hasNext()) {
+                Integer key = keyIt.next();
+                String comp1 = passedMap.get(key);
+                String comp2 = val;
+
+                if (comp1.equals(comp2)) {
+                    keyIt.remove();
+                    sortedMap.put(key, val);
+                    break;
+                }
+            }
+        }
+        return sortedMap;
     }
 
 
