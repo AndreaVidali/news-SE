@@ -34,3 +34,4 @@ engine/.idea/misc.xml
 engine/.idea/modules.xml
 engine/.idea/workspace.xml
 engine/engine.iml
+engine/src/testLucene/cez.java
