@@ -23,7 +23,7 @@ import org.apache.lucene.util.BytesRef;
 
 import static org.apache.lucene.index.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS;
 
-public class StandardSearchEngine {
+public class SearchEngine {
 
     public static void main(String[] args) throws IOException, ParseException {
 
@@ -129,7 +129,7 @@ public class StandardSearchEngine {
                     tfidfScores.add(tf * idf);
                 }
             }
-            
+
             // combine results
             Collections.sort(tfidfScores);
             float scorePersonal = 0;

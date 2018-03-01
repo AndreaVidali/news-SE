@@ -35,3 +35,5 @@ engine/.idea/modules.xml
 engine/.idea/workspace.xml
 engine/engine.iml
 engine/src/testLucene/cez.java
+engine/src/testLucene/old.java
+engine/.idea/uiDesigner.xml
