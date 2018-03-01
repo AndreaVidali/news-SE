@@ -1,0 +1,16 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="engine:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/engine_jar</output-path>
+    <root id="archive" name="engine.jar">
+      <element id="module-output" name="engine" />
+      <element id="extracted-dir" path="$USER_HOME$/IdeaProjects/testLucene/lib/lucene-demo-7.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Downloads/commons-math3-3.6.1-bin.tar/commons-math3-3.6.1/commons-math3-3.6.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Downloads/commons-math3-3.6.1-bin.tar/commons-math3-3.6.1/commons-math3-3.6.1-tools.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Downloads/commons-math3-3.6.1-bin.tar/commons-math3-3.6.1/commons-math3-3.6.1-tests.jar" path-in-jar="/" />
+      <element id="dir-copy" path="$USER_HOME$/IdeaProjects" />
+      <element id="extracted-dir" path="$USER_HOME$/IdeaProjects/testLucene/lib/lucene-queryparser-7.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/IdeaProjects/testLucene/lib/lucene-core-7.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/IdeaProjects/testLucene/lib/lucene-analyzers-common-7.1.0.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
