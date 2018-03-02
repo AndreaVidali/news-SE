@@ -3,8 +3,10 @@ package engine;
 // TODO rimuovere documenti usati per personalizzare utente
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -18,6 +20,7 @@ import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.search.similarities.TFIDFSimilarity;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.BytesRef;
 
@@ -25,18 +28,23 @@ import static org.apache.lucene.index.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_
 
 public class SearchEngine {
 
+    private static final String INDEX_DIRECTORY = "C:/Users/kivid/news-SE/index";
+
     public static void main(String[] args) throws IOException, ParseException {
 
         // Specify the analyzer for tokenizing text. The same analyzer should be used for indexing and searching
         StandardAnalyzer analyzer = new StandardAnalyzer();
 
         // create the index
-        Directory index = new RAMDirectory();
+        Directory index = null;
+        index = FSDirectory.open(Paths.get(INDEX_DIRECTORY));
+        //Directory index = new RAMDirectory();
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         Similarity similarity = new ClassicSimilarity();
         config.setSimilarity(similarity);
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
         IndexWriter w = new IndexWriter(index, config);
+        //IndexWriter writer = new IndexWriter("MyIndexPath",analyzer, false);
 
         // read the news file
         BufferedReader buf = new BufferedReader(new FileReader("documents/news-bbcworld.txt"));

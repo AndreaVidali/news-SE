@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="lucene-demo-7.1.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/IdeaProjects/testLucene/lib/lucene-demo-7.1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -23,7 +23,7 @@ return_regexp = re.compile(r'[\n]')
 space_regexp = re.compile(r'\s+')
 
 # tweets request
-bbc_tweets = api.user_timeline(screen_name='BBCWorld', count=15)
+# bbc_tweets = api.user_timeline(screen_name='BBCWorld', count=15)
 
 # write results on file
 with open('news-bbcworld.txt', 'a', encoding="utf8") as outfile:
@@ -72,7 +72,7 @@ with open('news-bbcworld.txt', 'a', encoding="utf8") as outfile:
                         if par.attrs == {'class': ['top-stories-promo-story__summary', '']}:
                             text_end = True
                         if text_begin and not text_end:
-                            story_text = story_text + par.text  # append the text
+                            story_text = story_text + ' ' + par.text  # append the text
 
                     # delete newlines and multiple spaces
                     story_text = return_regexp.sub(' ', story_text)
