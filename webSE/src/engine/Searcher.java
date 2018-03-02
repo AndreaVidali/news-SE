@@ -1,5 +1,11 @@
 package engine;
 
+// TODO joinare nuove news
+// TODO mettere a post home e preferenze utente
+// TODO scegliere nomi utenti
+// TODO controllare interessi
+// TODO fixare il punto nel testo contiguo
+
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
