@@ -37,3 +37,9 @@ engine/engine.iml
 engine/src/testLucene/cez.java
 engine/src/testLucene/old.java
 engine/.idea/uiDesigner.xml
+.idea/workspace.xml
+.idea/misc.xml
+.idea/news-SE.iml
+.idea/modules.xml
+engine/.idea/engine.iml
+.idea/vcs.xml
