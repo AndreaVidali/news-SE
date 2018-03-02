@@ -7,6 +7,14 @@
         <element id="directory" name="classes">
           <element id="module-output" name="webSE" />
         </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="lucene-queryparser-7.1.0" />
+          <element id="library" level="project" name="lucene-demo-7.1.0" />
+          <element id="library" level="project" name="lucene-core-7.1.0" />
+          <element id="library" level="project" name="lucene-analyzers-common-7.1.0" />
+          <element id="library" level="project" name="Mojarra-2.2.1" />
+          <element id="library" level="project" name="commons-lang3-3.7" />
+        </element>
       </element>
     </root>
   </artifact>

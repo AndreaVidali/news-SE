@@ -1,13 +1,7 @@
 import urllib.request
 from bs4 import BeautifulSoup
 
-# url = "https://en.wikipedia.org/wiki/List_of_state_and_union_territory_capitals_in_India"
-# url = "https://www.nytimes.com/2017/12/12/world/europe/belgium-electricity.html?smid=tw-nytimes&smtyp=cur"
-# url = "https://www.nytimes.com/2017/12/13/us/politics/tax-bill-republicans-deal.html?hp&action=click&pgtype=Homepage&clickSource=image&module=b-lede-package-region&region=top-news&WT.nav=top-news"
-# url = "https://www.nytimes.com/interactive/2017/12/14/climate/republicans-global-warming-maps.html?hp&action=click&pgtype=Homepage&clickSource=story-heading&module=second-column-region&region=top-news&WT.nav=top-news"
-# url = "https://t.co/dM34E1OHKU"
-# url = "https://t.co/EqfoMZVZhb"
-url = "https://t.co/a7czeZpzxZ"
+url = "https://www.reuters.com/article/us-usa-trade/trump-says-u-s-to-impose-tariffs-on-steel-aluminum-imports-idUSKCN1GD3QO?utm_campaign=trueAnthem:+Trending+Content&utm_content=5a989b0e04d3013d0ea997be&utm_medium=trueAnthem&utm_source=twitter"
 
 page = urllib.request.urlopen(url)
 
@@ -18,11 +12,9 @@ soup = BeautifulSoup(page, 'lxml')
 with open('page.txt', 'w', encoding="utf8") as outfile:
     outfile.write(soup.prettify())
 
-all_par = soup.find_all('p')
 
 story_par = soup.find_all('p')
 
-text_end = bool(0)
 '''
 for idx, par in enumerate(story_par):
     if idx > 11 and not text_end:
@@ -37,10 +29,12 @@ text_end = False
 
 
 for par in story_par:
-    if par.attrs == {'class': ['story-body__introduction']}:
-        text_begin = True
-    if par.attrs == {'class': ['top-stories-promo-story__summary', '']}:
-        text_end = True
-    if text_begin and not text_end:
+    if par.attrs == {'class': ['MegaArticleBody_first-p_2htdt']}:
+    #     text_begin = True
+    # if par.attrs == {'class': ['top-stories-promo-story__summary', '']}:
+    #     text_end = True
+    # if text_begin and not text_end:
+        print(par.text)
+    if par.attrs == {'class': ['']}:
         print(par.text)
 

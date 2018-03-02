@@ -9,15 +9,15 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet>
-        <servlet-name>MyServlet</servlet-name>
-        <servlet-class>engine.MyServlet</servlet-class>
+        <servlet-name>Searcher</servlet-name>
+        <servlet-class>engine.Searcher</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>MyServlet</servlet-name>
-        <url-pattern>/MyServlet</url-pattern>
+        <servlet-name>Searcher</servlet-name>
+        <url-pattern>/Searcher</url-pattern>
     </servlet-mapping>
 </web-app>

@@ -23,12 +23,11 @@ return_regexp = re.compile(r'[\n]')
 space_regexp = re.compile(r'\s+')
 
 # tweets request
-# bbc_tweets = api.user_timeline(screen_name='BBCWorld', count=15)
+# reuters_tweets = api.user_timeline(screen_name='ReutersWorld', count=15)
 
 # write results on file
-with open('news-bbcworld.txt', 'a', encoding="utf8") as outfile:
-
-    for tweet in tweepy.Cursor(api.user_timeline, screen_name='BBCWorld').items():
+with open('news-reutersworld.txt', 'a', encoding="utf8") as outfile:
+    for tweet in tweepy.Cursor(api.user_timeline, screen_name='ReutersWorld').items():
 
         # remove newlines form tweet text and print
         tweet_cleaned = return_regexp.sub('', tweet.text)
@@ -40,7 +39,7 @@ with open('news-bbcworld.txt', 'a', encoding="utf8") as outfile:
             # check if the tweet it has been downloaded yet
             tweet_present = False
 
-            with open("news-bbcworld.txt", encoding="utf8") as tweets_file:
+            with open("news-reutersworld.txt", encoding="utf8") as tweets_file:
                 for line in csv.reader(tweets_file, dialect="excel-tab"):
                     if str(tweet.id) == line[0]:
                         tweet_present = True
@@ -62,16 +61,10 @@ with open('news-bbcworld.txt', 'a', encoding="utf8") as outfile:
                     # here we store the text of the news
                     story_text = ''
 
-                    # flag that catch the begin and the end of the news
-                    text_begin = False
-                    text_end = False
-
                     for par in story_par:
-                        if par.attrs == {'class': ['story-body__introduction']}:
-                            text_begin = True
-                        if par.attrs == {'class': ['top-stories-promo-story__summary', '']}:
-                            text_end = True
-                        if text_begin and not text_end:
+                        if par.attrs == {'class': ['MegaArticleBody_first-p_2htdt']}:
+                            story_text = story_text + ' ' + par.text  # append the text
+                        if par.attrs == {'class': ['']}:
                             story_text = story_text + ' ' + par.text  # append the text
 
                     # delete newlines and multiple spaces
@@ -82,15 +75,12 @@ with open('news-bbcworld.txt', 'a', encoding="utf8") as outfile:
                     if story_text:
 
                         # if it is not a video-news
-                        if not 'Copy this link' in story_text:
-                            outfile.write(str(tweet.id) + '\t' + str(tweet.created_at) + '\t' + tweet_url + '\t' +
-                                          tweet_cleaned + '\t' + story_text + '\n')
-                            print('--- Done!')
-                        else:
-                            print('--- Error: copy this link')
+                        # if not 'Copy this link' in story_text:
+                        outfile.write(str(tweet.id) + '\t' + str(tweet.created_at) + '\t' + tweet_url + '\t' +
+                                      tweet_cleaned + '\t' + story_text + '\n')
+                        print('--- Done!')
                     else:
                         print('--- Nessun testo estratto')
-
                 except:
                     print('URL not valid')
         else:
